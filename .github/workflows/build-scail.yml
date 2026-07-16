@@ -1,6 +1,9 @@
 name: build-scail
 on:
   workflow_dispatch: {}
+  push:
+    branches: [main]
+    paths: ['Dockerfile', 'src/**', 'custom/**', '.github/workflows/build-scail.yml']
 permissions:
   contents: read
   packages: write
