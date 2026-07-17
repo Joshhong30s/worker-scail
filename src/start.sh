@@ -39,6 +39,17 @@ if [ -d /runpod-volume ]; then
       done
     ) &
     echo "worker-comfyui: SCAIL volume glue active (input symlink + output sync)"
+    # boot breadcrumb -> readable from home via S3 (self-diagnosis without logs)
+    {
+      date
+      echo "--- mount ---";   mount | grep runpod-volume
+      echo "--- /runpod-volume ---";        ls -la /runpod-volume 2>&1 | head -20
+      echo "--- /runpod-volume/input ---";  ls -la /runpod-volume/input 2>&1 | head -20
+      echo "--- /comfyui/input (symlink?) ---"; ls -la /comfyui/input 2>&1 | head -20
+      echo "--- models seen ---"; ls /runpod-volume/models/diffusion_models /runpod-volume/models/text_encoders/Wan 2>&1
+    } > /runpod-volume/boot_debug.txt 2>&1
+    # boot patch hook: drop boot_patch.sh on the volume -> runs every boot (no image rebuild needed)
+    [ -f /runpod-volume/boot_patch.sh ] && bash /runpod-volume/boot_patch.sh || true
 fi
 
 
